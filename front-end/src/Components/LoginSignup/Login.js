@@ -43,14 +43,29 @@ const Login = () => {
 
             const accessToken = response?.data?.token;
             const roles = response?.data?.userDTO?.role; //Zastanowić się czy nie lepiej odbierać dane o roli przez token
+            const isNewUser = response?.data?.userDTO?.isNewUser;
 
+
+            
             console.log('Access Token:', accessToken);
             console.log('User role:', roles);
 
-            setAuth({ user, pwd, roles, accessToken });
+            // console.log('UserDTO:', response?.data?.userDTO);
+            console.log('Is New User:', isNewUser);
+
+            localStorage.setItem('token', accessToken);
+            
+            setAuth({ user, pwd, roles, accessToken, isNewUser});
             setUser('');
             setPwd('');
-            navigate(from, {replace: true});
+
+            if(isNewUser){
+                navigate('/fill-out-profile', { replace: true });
+            }else{
+                navigate(from, {replace: true});
+            }
+
+        
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');

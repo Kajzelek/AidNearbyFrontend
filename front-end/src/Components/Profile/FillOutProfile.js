@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 
 const FillOutProfile = () => {
+
+  const { auth, setAuth } = useAuth();
+  const navigate = useNavigate();
+
   const [profileData, setProfileData] = useState({
     firstName: '',
     lastName: '',
@@ -25,6 +31,7 @@ const FillOutProfile = () => {
 
     try {
       const token = localStorage.getItem('token'); // Pobieramy token z localStorage
+      console.log('Token:', token);
 
       const response = await fetch('http://localhost:8080/FillOutProfile', {
         method: 'POST',
@@ -38,8 +45,17 @@ const FillOutProfile = () => {
         }),
       });
 
+
+
       if (response.ok) {
         alert("Profil został zapisany!");
+
+        console.log(JSON.stringify(response?.data));
+        // Aktualizacja wartości isNewUser na false w stanie aplikacji
+        setAuth(prev => ({ ...prev, isNewUser: false }));
+        // Przekierowanie na stronę główną po wypełnieniu formularza
+        navigate('/', { replace: true });
+
       } else {
         const errorData = await response.json();
         alert(`Błąd: ${errorData.message}`);

@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import LoginSignup from './Components/LoginSignup/LoginSignup';
 import Register from './Components/LoginSignup/Register';
@@ -8,6 +7,11 @@ import RequireAuth from './Components/Auth/RequireAuth';
 import FillOutProfile from './Components/Profile/FillOutProfile';
 import HomePage from './Components/Home/HomePage';
 import { Routes, Route } from 'react-router-dom';
+
+const ROLES = {
+  'User'  : 'USER',
+  'Admin' : 'ADMIN' 
+};
 
 
 function App() {
@@ -21,12 +25,17 @@ function App() {
         
 
         {/* Protected routes  */}
-        <Route element={<RequireAuth />}>
+        {/* User routes */}
+        <Route element={<RequireAuth allowedRoles={[ROLES.User]}/>}>
           <Route path="/" element={<HomePage/>}></Route>
-          <Route path="fill-out-profile" element={<FillOutProfile/>}></Route>
-          {/* </Route><Route path="AdminHome" element={<AdminHome/>}></Route> */}
+          <Route path="fill-out-profile" element={<FillOutProfile/>}></Route>  
         </Route>
 
+        {/* Admin routes */}
+        <Route element={<RequireAuth allowedRoles={[ROLES.Admin]}/>}>
+        
+          {/* <Route path="AdminHome" element={<AdminHome/>}></Route> */}
+        </Route>
 
         {/* Catch others  */}
         {/* <Route path="*" element={<Missing/>}></Route> */}
