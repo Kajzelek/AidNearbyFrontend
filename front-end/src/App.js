@@ -16,6 +16,7 @@ import MainSection from './Components/Home/MainSection';
 import Footer from './Components/Home/Footer';
 import AboutSection from './Components/Home/AboutSection';
 import FeaturedAds from './Components/Home/FeaturedAds';
+import CreateAdForm from './Components/Home/CreateAdForm';
 
 const ROLES = {
   'User'  : 'USER',
@@ -27,46 +28,52 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-
+        
         {/* Public routes */}
-        <Route path="login" element={<Login/>}></Route>
-        <Route path="login2" element={<Login2/>}></Route>
-        <Route path="register" element={<Register/>}></Route>
-        <Route path="register2" element={<Register2/>}></Route>
+        <Route path="login" element={<Login />} />
+        <Route path="login2" element={<Login2 />} />
+        <Route path="register" element={<Register />} />
+        <Route path="register2" element={<Register2 />} />
         
-
-        {/* Protected routes  */}
+        {/* Protected routes */}
         {/* User routes */}
-        <Route element={<RequireAuth allowedRoles={[ROLES.User]}/>}>
-          <Route path="/" element={<HomePage/>}></Route>
-          <Route path="/hp2" element={<HomePage2/>}></Route>
+        <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/hp2" element={<HomePage2 />} />
           <Route path="/hp3" element={
-            <>
-             <div className="flex flex-col min-h-screen">
-      <Navbar />
-      <main className="flex-grow bg-gray-100">
-        <MainSection />
-      </main>
-      <Footer />
-    </div>
-            </>
-          }>
+            <div className="flex flex-col min-h-screen">
+              <Navbar />
+              <main className="flex-grow bg-gray-100">
+                <MainSection />
+              </main>
+              <Footer />
+            </div>
+          } />
 
-        </Route>
-          <Route path="fill-out-profile" element={<FillOutProfile/>}></Route>  
-          <Route path="fill-out-profile2" element={<FillOutProfile2/>}></Route>
-        </Route>
+          <Route path="/create-ad" element={
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+                  <main className="flex-grow bg-gray-100">
+                    <CreateAdForm />
+                  </main>
+                <Footer />
+              </div>
+          } />
 
-        {/* Admin routes */}
-        <Route element={<RequireAuth allowedRoles={[ROLES.Admin]}/>}>
+
+          <Route path="/fill-out-profile" element={<FillOutProfile />} />
+          <Route path="/fill-out-profile2" element={<FillOutProfile2 />} />
+        </Route>
         
-          {/* <Route path="AdminHome" element={<AdminHome/>}></Route> */}
+        {/* Admin routes */}
+        <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+          {/* Admin-specific routes */}
+          {/* <Route path="AdminHome" element={<AdminHome />} /> */}
         </Route>
-
-        {/* Catch others  */}
-        {/* <Route path="*" element={<Missing/>}></Route> */}
-
-      </Route>  
+        
+        {/* Catch others */}
+        {/* <Route path="*" element={<Missing />} /> */}
+      </Route>
     </Routes>
   );
 }

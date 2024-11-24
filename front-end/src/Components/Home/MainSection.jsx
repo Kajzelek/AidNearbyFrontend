@@ -1,7 +1,11 @@
 import { AiOutlineSearch, AiOutlinePlus } from 'react-icons/ai';
 import { FaUserFriends, FaBullhorn } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const MainSection = () => {
+
+  const navigate = useNavigate();
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
   <div className="container mx-auto px-6 md:px-12 lg:px-20">
@@ -15,10 +19,16 @@ const MainSection = () => {
           Aid Nearby to aplikacja wspierająca pomoc sąsiedzką. Znajdź pomoc lub zaoferuj swoje wsparcie już dziś!
         </p>
         <div className="space-y-4">
-          <button className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-blue-500 text-white font-medium rounded-lg shadow hover:bg-blue-600 transition duration-300">
+
+          <button 
+            onClick={() => navigate('/create-ad')}
+            className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-blue-500 text-white font-medium rounded-lg shadow hover:bg-blue-600 transition duration-300"
+          >
+            
             <AiOutlinePlus size={20} />
             <span>Add Advertisement</span>
           </button>
+
           <button className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-green-500 text-white font-medium rounded-lg shadow hover:bg-green-600 transition duration-300">
             <AiOutlineSearch size={20} />
             <span>Search Advertisement</span>
