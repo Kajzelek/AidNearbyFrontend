@@ -1,21 +1,60 @@
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 
 const CreateAdForm = () => {
   const { register, handleSubmit, reset } = useForm();
+  const [categories, setCategories] = useState([]);
 
-  const onSubmit = async (data) => {
-    try {
-      const token = localStorage.getItem('token'); // Załóżmy, że token jest w LocalStorage
-      const response = await axios.post(
-        '/api/ads/createAd',
-        { ...data },
-        {
+  const apiClient = axios.create({
+    baseURL: 'http://localhost:8080', // Adres backendu
+  });
+
+  useEffect(() => {
+    // Pobierz dostępne kategorie z backendu
+    const fetchCategories = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No token found');
+        }
+        const response = await apiClient.get('/api/ad-categories', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
-      );
+        });
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const onSubmit = async (data) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('No token found. Please log in.');
+        return;
+      }
+  
+      // Konwersja `adCategory` ze stringa do obiektu
+      const parsedCategory = JSON.parse(data.adCategory);
+  
+      const payload = {
+        ...data,
+        adCategory: parsedCategory, // Zamiana na obiekt
+      };
+  
+      console.log('Data sent to backend:', payload);
+  
+      const response = await apiClient.post('/api/ads/createAd', payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
       alert('Ad created successfully!');
       reset();
     } catch (error) {
@@ -44,8 +83,11 @@ const CreateAdForm = () => {
               className="w-full p-2 border border-gray-300 rounded-lg"
             >
               <option value="">Select category</option>
-              <option value="CATEGORY_1">Category 1</option>
-              <option value="CATEGORY_2">Category 2</option>
+              {categories.map((category) => (
+                <option key={category.adCategoryId} value={JSON.stringify(category)}>
+                  {category.categoryName}
+                </option>
+              ))}
             </select>
           </div>
           <div>
