@@ -1,4 +1,5 @@
 import './App.css';
+import React, { useEffect } from 'react';
 import LoginSignup from './Components/LoginSignup/LoginSignup.css';
 import Register from './Components/LoginSignup/Register';
 import Register2 from './Components/LoginSignup/Register2';
@@ -23,8 +24,30 @@ const ROLES = {
   'Admin' : 'ADMIN' 
 };
 
+const loadGoogleMapsScript = (callback) => {
+  const existingScript = document.getElementById('googleMaps');
+  if (!existingScript) {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyA_KJEl3P4jbk7kGxOuz8yUCrVVulvXSzs&libraries=places`;
+    script.id = 'googleMaps';
+    script.async = true;
+    script.defer = true;
+    script.onload = callback;
+    document.body.appendChild(script);
+  } else if (callback) {
+    callback();
+  }
+};
+
 
 function App() {
+
+  useEffect(() => {
+    loadGoogleMapsScript(() => {
+      console.log('Google Maps API loaded');
+    });
+  }, []);
+  
   return (
     <Routes>
       <Route path="/" element={<Layout />}>

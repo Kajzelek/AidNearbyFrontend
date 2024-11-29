@@ -7,7 +7,7 @@ const MainSection = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 pt-16">
   <div className="container mx-auto px-6 md:px-12 lg:px-20">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center pb-16">
       {/* Left side - Description and Buttons */}
