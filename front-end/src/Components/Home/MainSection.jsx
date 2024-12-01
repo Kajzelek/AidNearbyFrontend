@@ -29,7 +29,10 @@ const MainSection = () => {
             <span>Add Advertisement</span>
           </button>
 
-          <button className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-green-500 text-white font-medium rounded-lg shadow hover:bg-green-600 transition duration-300">
+          <button 
+            onClick={() => navigate('/search-ads')}
+            className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-green-500 text-white font-medium rounded-lg shadow hover:bg-green-600 transition duration-300"
+          >
             <AiOutlineSearch size={20} />
             <span>Search Advertisement</span>
           </button>

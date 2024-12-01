@@ -18,6 +18,7 @@ import Footer from './Components/Home/Footer';
 import AboutSection from './Components/Home/AboutSection';
 import FeaturedAds from './Components/Home/FeaturedAds';
 import CreateAdForm from './Components/Home/CreateAdForm';
+import SearchAds from './Components/Home/SearchAds';
 
 const ROLES = {
   'User'  : 'USER',
@@ -78,6 +79,16 @@ function App() {
                 <Navbar />
                   <main className="flex-grow bg-gray-100">
                     <CreateAdForm />
+                  </main>
+                <Footer />
+              </div>
+          } />
+
+          <Route path="/search-ads" element={
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+                  <main className="flex-grow bg-gray-100">
+                    <SearchAds />
                   </main>
                 <Footer />
               </div>
