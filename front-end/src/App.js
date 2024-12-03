@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import LoginSignup from './Components/LoginSignup/LoginSignup.css';
 import Register from './Components/LoginSignup/Register';
 import Register2 from './Components/LoginSignup/Register2';
-import Login from './Components/LoginSignup/Login';
+import Login from './Components/LoginSignup/Login2';
 import Login2 from './Components/LoginSignup/Login2';
 import Layout from './Components/Layout';
 import RequireAuth from './Components/Auth/RequireAuth';
@@ -19,6 +19,10 @@ import AboutSection from './Components/Home/AboutSection';
 import FeaturedAds from './Components/Home/FeaturedAds';
 import CreateAdForm from './Components/Home/CreateAdForm';
 import SearchAds from './Components/Home/SearchAds';
+import { LocationProvider } from './context/LocationContext';
+import AdDetails from './Components/Home/AdDetails';
+
+
 
 const ROLES = {
   'User'  : 'USER',
@@ -40,7 +44,6 @@ const loadGoogleMapsScript = (callback) => {
   }
 };
 
-
 function App() {
 
   useEffect(() => {
@@ -48,8 +51,22 @@ function App() {
       console.log('Google Maps API loaded');
     });
   }, []);
+
+  const ads = [
+    {
+      adId: '1',
+      adTitle: 'Ogłoszenie 1',
+      adCategory: 'Kategoria 1',
+      adDescription: 'Opis ogłoszenia 1',
+      adLocation: 'Lokalizacja 1',
+      latitude: 50.06143,
+      longitude: 19.93658,
+      adStatus: 'Aktywne'
+    },
+  ];
   
   return (
+    <LocationProvider>
     <Routes>
       <Route path="/" element={<Layout />}>
         
@@ -94,6 +111,16 @@ function App() {
               </div>
           } />
 
+          <Route path="/ads/:adId" element={
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+                  <main className="flex-grow bg-gray-100">
+                    <AdDetails ads={ads} />
+                  </main>
+                <Footer />
+              </div>
+          } />
+
 
           <Route path="/fill-out-profile" element={<FillOutProfile />} />
           <Route path="/fill-out-profile2" element={<FillOutProfile2 />} />
@@ -109,6 +136,7 @@ function App() {
         {/* <Route path="*" element={<Missing />} /> */}
       </Route>
     </Routes>
+    </LocationProvider>
   );
 }
 

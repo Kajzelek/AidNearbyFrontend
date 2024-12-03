@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useContext } from 'react';
 import axios from '../../api/axios';
 import useAuth from '../../hooks/useAuth';
 import {Link, useNavigate, useLocation} from 'react-router-dom';
+import { useLocationContext } from '../../context/LocationContext';
 
 
 const LOGIN_URL = '/login';
@@ -9,11 +10,14 @@ const LOGIN_URL = '/login';
 const Login = () => {
 
     const { setAuth } = useAuth();
+    const { setLocation } = useLocationContext();
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location?.state?.from || { pathname: '/' };
+    const from = location?.state?.from || { pathname: '/hp3' };
     const userRef = useRef();
     const errRef = useRef();
+    
+    
 
     const [user, setUser] = useState('');
     const [pwd, setPwd] = useState('');
@@ -45,17 +49,25 @@ const Login = () => {
             const accessToken = response?.data?.token;
             const roles = response?.data?.userDTO?.role; //Zastanowić się czy nie lepiej odbierać dane o roli przez token
             const isNewUser = response?.data?.userDTO?.isNewUser;
+            const latitude = response?.data?.userDTO?.latitude;
+            const longitude = response?.data?.userDTO?.longitude;
 
 
-            
             console.log('Access Token:', accessToken);
             console.log('User role:', roles);
+            console.log('Is New User:', isNewUser);
+            console.log('latitude:', latitude);
+            console.log('longitude:', longitude);
+        
+
 
             // console.log('UserDTO:', response?.data?.userDTO);
-            console.log('Is New User:', isNewUser);
+            
 
             localStorage.setItem('token', accessToken);
-            
+
+
+            setLocation({ latitude, longitude });
             setAuth({ user, pwd, roles, accessToken, isNewUser});
             setUser('');
             setPwd('');

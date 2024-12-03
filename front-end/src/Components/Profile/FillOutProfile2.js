@@ -11,7 +11,7 @@ const FillOutProfile = () => {
     firstName: '',
     lastName: '',
     phoneNumber: '',
-    location: '', // Zmieniono 'address' na 'location'
+    address: '', // Zmieniono z 'location' na 'address'
     profilePicture: '',
     bio: '',
     age: '',
@@ -55,7 +55,7 @@ const FillOutProfile = () => {
       if (response.ok) {
         alert('Profile saved successfully!');
         setAuth((prev) => ({ ...prev, isNewUser: false }));
-        navigate('/', { replace: true });
+        navigate('/hp3', { replace: true });
       } else {
         const errorData = await response.json();
         setErrMsg(errorData.message || 'Failed to save profile');
@@ -135,29 +135,29 @@ const FillOutProfile = () => {
             />
           </div>
           <div>
-            <label htmlFor="location" className="block text-gray-600 mb-1">Location</label>
+            <label htmlFor="address" className="block text-gray-600 mb-1">Address</label>
             <div className="relative">
               <FaMapMarkerAlt className="absolute left-3 top-3 text-gray-400" />
               {useMap ? (
                 <input
                   type="text"
-                  id="location"
-                  name="location"
-                  value={profileData.location}
+                  id="address"
+                  name="address"
+                  value={profileData.address}
                   onChange={handleChange}
                   className="w-full pl-10 px-4 py-2 border rounded-lg"
-                  placeholder="Use the map to select location"
+                  placeholder="Use the map to select address"
                   disabled
                 />
               ) : (
                 <input
                   type="text"
-                  id="location"
-                  name="location"
-                  value={profileData.location}
+                  id="address"
+                  name="address"
+                  value={profileData.address}
                   onChange={handleChange}
                   className="w-full pl-10 px-4 py-2 border rounded-lg"
-                  placeholder="Enter location manually"
+                  placeholder="Enter address manually"
                 />
               )}
             </div>
