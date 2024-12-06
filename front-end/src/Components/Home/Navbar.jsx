@@ -118,6 +118,7 @@ const Navbar = () => {
               My History
             </Link>
           </li>
+          
           <li>
             <Link to="/help" onClick={handleNav} className="hover:text-blue-600 transition">
               Help

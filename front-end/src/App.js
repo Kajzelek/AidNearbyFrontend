@@ -21,6 +21,7 @@ import CreateAdForm from './Components/Home/CreateAdForm';
 import SearchAds from './Components/Home/SearchAds';
 import { LocationProvider } from './context/LocationContext';
 import AdDetails from './Components/Home/AdDetails';
+import AdsPage from './Components/Home/AdsPage';
 
 
 
@@ -115,11 +116,23 @@ function App() {
               <div className="flex flex-col min-h-screen">
                 <Navbar />
                   <main className="flex-grow bg-gray-100">
-                    <AdDetails ads={ads} />
+                    <AdDetails />
                   </main>
                 <Footer />
               </div>
           } />
+
+          <Route path="/ads" element={
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+                  <main className="flex-grow bg-gray-100">
+                    <AdsPage />
+                  </main>
+                <Footer />
+              </div>
+          } />
+
+          
 
 
           <Route path="/fill-out-profile" element={<FillOutProfile />} />
