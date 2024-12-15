@@ -22,6 +22,7 @@ import SearchAds from './Components/Home/SearchAds';
 import { LocationProvider } from './context/LocationContext';
 import AdDetails from './Components/Home/AdDetails';
 import AdsPage from './Components/Home/AdsPage';
+import MyApplicationsPage from './Components/Home/MyApplicationsPage';
 
 
 
@@ -131,6 +132,16 @@ function App() {
                 <Footer />
               </div>
           } />
+
+        <Route path="/my-applications" element={
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+                  <main className="flex-grow bg-gray-100">
+                    <MyApplicationsPage />
+                  </main>
+                <Footer />
+              </div>
+         } />
 
           
 
