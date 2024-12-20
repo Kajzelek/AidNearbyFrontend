@@ -210,7 +210,7 @@ const CreateAdForm = () => {
               <div className="relative">
                 <FaMapMarkerAlt className="absolute left-3 top-3 text-gray-400" />
                 <input
-                  {...register('address', { required: true })}
+                  {...register('adLocation', { required: true })}
                   type="text"
                   placeholder="Enter address"
                   className="w-full pl-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

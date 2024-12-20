@@ -1,63 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaClock, FaCheck, FaTimes } from 'react-icons/fa';
 
 const MyApplicationsPage = () => {
-    const [activeTab, setActiveTab] = useState('pending');
+    const [activeTab, setActiveTab] = useState('ROZPATRYWANE');
+    const [applications, setApplications] = useState({ ROZPATRYWANE: [], ZAAKCEPTOWANE: [], ODRZUCONE: [] });
 
-    const applications = {
-        pending: [
-            { id: 1, title: 'Pending Application 1', date: '2023-10-01', status: 'Pending' },
-            { id: 2, title: 'Pending Application 2', date: '2023-10-02', status: 'Pending' },
-        ],
-        accepted: [
-            { id: 3, title: 'Accepted Application 1', date: '2023-09-25', status: 'Accepted' },
-            { id: 4, title: 'Accepted Application 2', date: '2023-09-26', status: 'Accepted' },
-        ],
-        rejected: [
-            { id: 5, title: 'Rejected Application 1', date: '2023-09-20', status: 'Rejected' },
-            { id: 6, title: 'Rejected Application 2', date: '2023-09-21', status: 'Rejected' },
-        ],
-    };
+    useEffect(() => {
+        const fetchApplications = async (status) => {
+            const token = localStorage.getItem("token");
+            try {
+                const response = await fetch(`http://localhost:8080/api/adApplications?status=${status}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
+                const data = await response.json();
+                console.log(data);
+                setApplications(prevState => ({ ...prevState, [status]: data }));
+            } catch (error) {
+                console.error('Error fetching applications:', error);
+            }
+        };
+
+        fetchApplications('ROZPATRYWANE');
+        fetchApplications('ZAAKCEPTOWANE');
+        fetchApplications('ODRZUCONE');
+    }, []);
+
+    useEffect(() => {
+        console.log('Updated applications:', applications);
+    }, [applications]);
 
     const renderApplications = (category) => {
         return applications[category].map(app => (
-            <div key={app.id} className="p-4 bg-white shadow-md rounded mb-4">
-                <h3 className="text-lg font-bold">{app.title}</h3>
-                <p className="text-sm text-gray-600">Date: {app.date}</p>
-                <p className={`text-sm ${app.status === 'Pending' ? 'text-yellow-500' : app.status === 'Accepted' ? 'text-green-500' : 'text-red-500'}`}>
-                    Status: {app.status}
+            <div key={app.adId} className="p-4 bg-white shadow-md rounded mb-4">
+                <h3 className="text-lg font-bold">{app.adTitle}</h3>
+                <p className="text-gray-600">{new Date(app.createdAt).toLocaleDateString()} | {new Date(app.createdAt).toLocaleTimeString()}</p>
+                <p className={`text-sm ${app.status === 'ZAAKCEPTOWANE' ? 'text-green-500' : app.status === 'ODRZUCONE' ? 'text-red-500' : 'text-yellow-500'}`}>
+                    {app.status}
                 </p>
             </div>
         ));
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">My Applications</h1>
-            <div className="flex space-x-4 mb-4">
-                <button
-                    className={`px-4 py-2 rounded flex items-center space-x-2 ${activeTab === 'pending' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                    onClick={() => setActiveTab('pending')}
-                >
-                    <FaClock />
-                    <span>Pending</span>
+        <div className="container mx-auto p-6 mt-16"> {/* Dodaj margines górny */}
+            <div className="flex justify-center mb-6">
+                <button onClick={() => setActiveTab('ROZPATRYWANE')} className={`px-4 py-2 ${activeTab === 'ROZPATRYWANE' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} rounded-l`}>
+                    <FaClock className="inline mr-2" /> OCZEKUJĄCE
                 </button>
-                <button
-                    className={`px-4 py-2 rounded flex items-center space-x-2 ${activeTab === 'accepted' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                    onClick={() => setActiveTab('accepted')}
-                >
-                    <FaCheck />
-                    <span>Accepted</span>
+                <button onClick={() => setActiveTab('ZAAKCEPTOWANE')} className={`px-4 py-2 ${activeTab === 'ZAAKCEPTOWANE' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'}`}>
+                    <FaCheck className="inline mr-2" /> ZAAKCEPTOWANE
                 </button>
-                <button
-                    className={`px-4 py-2 rounded flex items-center space-x-2 ${activeTab === 'rejected' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                    onClick={() => setActiveTab('rejected')}
-                >
-                    <FaTimes />
-                    <span>Rejected</span>
+                <button onClick={() => setActiveTab('ODRZUCONE')} className={`px-4 py-2 ${activeTab === 'ODRZUCONE' ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700'} rounded-r`}>
+                    <FaTimes className="inline mr-2" /> ODRZUCONE
                 </button>
             </div>
-            <div className="applications">
+            <div>
                 {renderApplications(activeTab)}
             </div>
         </div>
