@@ -47,7 +47,7 @@ const SearchAds = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 mt-16 bg-gray-100 min-h-screen">
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold mb-6 text-center">Wyszukaj Ogłoszenia</h1>
 
@@ -61,6 +61,28 @@ const SearchAds = () => {
             <option value="Elektronika">Elektronika</option>
             <option value="Ubrania">Ubrania</option>
             <option value="Meble">Meble</option>
+            <option value="Services">Serwisy</option>
+            <option value="Transport">Transport</option>
+            <option value="Zakupy">Zakupy</option>
+            <option value="Opieka nad dziećmi">Opieka nad dziećmi</option>
+            <option value="Opieka nad zwierzętami">Opieka nad zwierzętami</option>
+            <option value="Sprzątanie">Sprzątanie</option>
+            <option value="Gotowanie">Gotowanie</option>
+            <option value="Naprawy domowe">Naprawy domowe</option>
+            <option value="Pomoc w nauce">Pomoc w nauce</option>
+            <option value="Ogrodnictwo">Ogrodnictwo</option>
+            <option value="Pomoc techniczna">Pomoc techniczna</option>
+            <option value="Wsparcie emocjonalne">Wsparcie emocjonalne</option>
+            <option value="Pomoc medyczna">Pomoc medyczna</option>
+            <option value="Prace remontowe">Prace remontowe</option>
+            <option value="Przeprowadzki">Przeprowadzki</option>
+            <option value="Wypożyczanie narzędzi">Wypożyczanie narzędzi</option>
+            <option value="Wypożyczanie sprzętu">Wypożyczanie sprzętu</option>
+            <option value="Kursy i szkolenia">Kursy i szkolenia</option>
+            <option value="Pomoc prawna">Pomoc prawna</option>
+            <option value="Doradztwo finansowe">Doradztwo finansowe</option>
+            <option value="Tłumaczenia">Tłumaczenia</option>
+            <option value="Inne">Inne</option>
             {/* Dodaj więcej kategorii */}
           </select>
         </div>

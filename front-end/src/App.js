@@ -81,9 +81,9 @@ function App() {
         {/* Protected routes */}
         {/* User routes */}
         <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/hp2" element={<HomePage2 />} />
-          <Route path="/hp3" element={
+
+  
+          <Route path="/" element={
             <div className="flex flex-col min-h-screen">
               <Navbar />
               <main className="flex-grow bg-gray-100">

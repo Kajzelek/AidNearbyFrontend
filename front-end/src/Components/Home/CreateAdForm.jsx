@@ -153,6 +153,18 @@ const CreateAdForm = () => {
             />
           </div>
 
+          <div>
+            <label className="block text-gray-600 mb-2">Help Type</label>
+            <select
+              {...register('helpType', { required: true })}
+              className="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              
+              <option value="PROVIDE">Udzielam pomocy</option>
+              <option value="LOOKING_FOR">Szukam pomocy</option>
+            </select>
+          </div>
+
           {/* Ad Category */}
           <div>
             <label className="block text-gray-600 mb-2">Ad Category</label>
@@ -233,7 +245,7 @@ const CreateAdForm = () => {
           )}
 
           {/* Ad Status */}
-          <div>
+          {/* <div>
             <label className="block text-gray-600 mb-2">Ad Status</label>
             <select
               {...register('adStatus', { required: true })}
@@ -243,7 +255,7 @@ const CreateAdForm = () => {
               <option value="ACTIVE">Active</option>
               <option value="INACTIVE">Inactive</option>
             </select>
-          </div>
+          </div> */}
 
           <button
             type="submit"
