@@ -24,6 +24,7 @@ import AdDetails from './Components/Home/AdDetails';
 import AdsPage from './Components/Home/AdsPage';
 import MyApplicationsPage from './Components/Home/MyApplicationsPage';
 import  MyAdsPage from './Components/Home/MyAdsPage';
+import MyAdDetailsProvide from './Components/Home/MyAdDetailsProvide';
 
 
 const ROLES = {
@@ -153,6 +154,16 @@ function App() {
                 <Footer />
               </div>
          } />
+
+        <Route path="/ad-details/:adId" element={
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+                  <main className="flex-grow bg-gray-100">
+                    <MyAdDetailsProvide/>
+                  </main>
+                <Footer />
+              </div>
+        } />
           
 
 

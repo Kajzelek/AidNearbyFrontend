@@ -70,6 +70,7 @@ const SearchAds = () => {
             <option value="Gotowanie">Gotowanie</option>
             <option value="Naprawy domowe">Naprawy domowe</option>
             <option value="Pomoc w nauce">Pomoc w nauce</option>
+            <option value="Jobs">KOREPETYCJE</option>
             <option value="Ogrodnictwo">Ogrodnictwo</option>
             <option value="Pomoc techniczna">Pomoc techniczna</option>
             <option value="Wsparcie emocjonalne">Wsparcie emocjonalne</option>
