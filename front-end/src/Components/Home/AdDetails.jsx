@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { FaUser, FaEnvelope, FaStar, FaTimes } from 'react-icons/fa';
 
 const AdDetails = () => {
@@ -13,10 +15,20 @@ const AdDetails = () => {
   const [profileData, setProfileData] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [userMessage, setUserMessage] = useState('');
+  const [hasApplied, setHasApplied] = useState(false);
+  const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
 
   const openProfileModal = async () => {
+    const token = localStorage.getItem("token");
     // Fetch profile data
-    const response = await fetch(`http://localhost:8080/getProfile?userId=${ad.userId}`);
+    const response = await fetch(`http://localhost:8080/getProfile?userId=${ad.userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      //body: JSON.stringify(adApplicationDTO)
+    });
     const data = await response.json();
     setProfileData(data);
     setIsProfileModalOpen(true);
@@ -38,6 +50,7 @@ const AdDetails = () => {
 
   const handleApplicationSubmit = async (e) => {
     e.preventDefault();
+
     const token = localStorage.getItem("token");
     const adApplicationDTO = {
       userMessage,
@@ -55,11 +68,12 @@ const AdDetails = () => {
 
     if (response.ok) {
       closeApplicationModal();
+      toast.success('Zgłoszenie zostało wysłane!')
     } else {
       console.error('Error submitting application');
+      toast.error('Wystąpił błąd podczas wysyłania zgłoszenia.')
     }
   };
-
 
   useEffect(() => {
     const fetchAdDetails = async () => {
@@ -86,9 +100,58 @@ const AdDetails = () => {
         setLoading(false);
       }
     };
-
     fetchAdDetails();
+    CheckIfApplied()
   }, [adId]);
+
+  const CheckIfApplied = async () => {
+    const token = localStorage.getItem("token");
+    try {
+     const response = await fetch(`http://localhost:8080/api/adApplications/hasUserApplied?adId=${adId}`, 
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const ifApplied = await response.json();
+      setHasApplied(ifApplied);
+    } catch (error) {
+      setError(error);
+    }
+  };
+
+  const fetchReviews = async () => {
+    const token = localStorage.getItem("token")
+    try {
+      const response = await fetch(`http://localhost:8080/api/review/getReviewsByUserId?userId=${ad.userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      })
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+      const data = await response.json()
+      setReviews(data)
+      setIsReviewsModalOpen(true)
+    } catch (error) {
+      console.error('Error fetching reviews:', error)
+    }
+  }
+
+  const closeReviewsModal = () => {
+    setIsReviewsModalOpen(false)
+    setReviews([])
+  }
+
 
   if (loading) {
     return <p>Loading...</p>;
@@ -118,27 +181,67 @@ const AdDetails = () => {
             <h2 className="font-bold text-2xl mb-4">{ad.adTitle}</h2>
             <p className="text-gray-700 mb-2">{ad.adDescription}</p>
             <p className="text-gray-700 mb-2"><strong>Kategoria:</strong> {ad.adCategory}</p>
-            <p className="text-gray-700 mb-2"><strong>Status:</strong> {ad.adStatus}</p>
             {ad.adLocation && <p className="text-gray-700 mb-2"><strong>Lokalizacja:</strong> {ad.adLocation}</p>}
-            {(ad.latitude && ad.longitude) && <p className="text-gray-700 mb-2"><strong>Koordynaty:</strong> {ad.latitude}, {ad.longitude}</p>}
             {/* Dodaj inne szczegóły ogłoszenia tutaj */}
             <div className="mt-6 flex space-x-4">
               <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">
                 Napisz wiadomość
               </button>
-              <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300">
-                Zgłoś się
+              <button 
+                className={`bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300 ${hasApplied ? 'cursor-not-allowed' : ''}"`} 
+                onClick={openApplicationModal}
+                disabled={hasApplied}
+                >
+                  {hasApplied ? 'Zgłoszono' : 'Zgłoś się'}
+              </button>
+            </div>
+
+            <div className="mt-6 flex space-x-4">
+        
+              <button 
+              className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition duration-300"
+              onClick={fetchReviews}
+              >
+                  Pokaż opinie
               </button>
 
-              <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300" onClick={openApplicationModal}>
-                Zgłoś się
-              </button>
-              <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300" onClick={openProfileModal}>
+              <button
+               className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300"
+               onClick={openProfileModal}>
                 Pokaż profil
               </button>
             </div>
           </div>
         </div>
+
+        {isReviewsModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full max-h-screen overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Opinie użytkowników</h2>
+              <button onClick={closeReviewsModal} className="text-gray-500 hover:text-gray-700">
+                <FaTimes />
+              </button>
+            </div>
+            <ul className="list-none p-0">
+              {reviews.map(review => (
+                <li key={review.id} className="border border-gray-300 p-4 mb-4 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <FaStar key={i} className={`mr-1 ${i < review.rating ? 'text-yellow-500' : 'text-gray-300'}`} />
+                    ))}
+                  </div>
+                  {/* <p className="font-bold">{review.userName}</p> */}
+                  <p className="text-gray-700 mb-2">{review.comment}</p>
+                  <p className="text-gray-500 text-sm">{new Date(review.createdAt).toLocaleDateString()}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
+        <ToastContainer />
       </div>
 
 
@@ -185,7 +288,7 @@ const AdDetails = () => {
               <div className="flex justify-end space-x-2">
                 <button 
                   type="submit" 
-                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+                  className={`bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300 mt-4 `}
                 >
                   Wyślij
                 </button>
