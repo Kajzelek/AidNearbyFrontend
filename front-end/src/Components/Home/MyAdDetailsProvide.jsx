@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { FaUser, FaEnvelope, FaCheck, FaTimes, FaStar } from 'react-icons/fa'
+import { FaUser, FaEnvelope, FaCheck, FaTimes, FaStar, FaEdit, FaTrash } from 'react-icons/fa'
 import { useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 const MyAdDetailsProvide = () => {
 
+  const navigate = useNavigate();
   const { adId } = useParams()
   const [adDetails, setAdDetails] = useState(null)
   const [applicants, setApplicants] = useState([])
@@ -14,6 +16,15 @@ const MyAdDetailsProvide = () => {
   const [profileData, setProfileData] = useState(null)
   const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false)
   const [reviews, setReviews] = useState([])
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    adTitle: '',
+    adCategory: '',
+    adDescription: '',
+    adLocation: '',
+    imageUrl: ''
+  });
 
   useEffect(() => {
     const fetchAdDetails = async () => {
@@ -31,6 +42,13 @@ const MyAdDetailsProvide = () => {
         }
         const data = await response.json()
         setAdDetails(data)
+        setEditFormData({
+          adTitle: data.adTitle,
+          adCategory: data.adCategory,
+          adDescription: data.adDescription,
+          adLocation: data.adLocation,
+          imageUrl: data.imageUrl
+        });
       } catch (error) {
         setError(error)
       } finally {
@@ -144,6 +162,74 @@ const MyAdDetailsProvide = () => {
     setReviews([])
   }
 
+  const openEditModal = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`http://localhost:8080/api/ads/${adId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(editFormData)
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const updatedAd = await response.json();
+      setAdDetails(updatedAd);
+      closeEditModal();
+    } catch (error) {
+      console.error('Error updating ad:', error);
+    }
+  };
+
+  const handleDeleteAd = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`http://localhost:8080/api/ads?adId=${adId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      navigate('/my-ads');
+    } catch (error) {
+      console.error('Error deleting ad:', error);
+    }
+  };
+
   if (loading) {
     return <p>Loading...</p>
   }
@@ -157,7 +243,7 @@ const MyAdDetailsProvide = () => {
   }
 
   return (
-    <div className="p-6  mt-16 max-w-4xl mx-auto">
+    <div className="p-6 mt-16 max-w-4xl mx-auto">
       <div className="text-center">
         <img src={adDetails.imageUrl || "https://via.placeholder.com/800x400"} alt="Ad" className="max-w-full h-auto mx-auto" />
       </div>
@@ -166,6 +252,21 @@ const MyAdDetailsProvide = () => {
       <p className="mt-2"><strong>Category:</strong> {adDetails.adCategory}</p>
       <p className="mt-2"><strong>Description:</strong> {adDetails.adDescription}</p>
       <p className="mt-2"><strong>Location:</strong> {adDetails.adLocation}</p>
+
+      <div className="flex justify-end mt-4 space-x-2">
+        <button 
+          className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300"
+          onClick={openEditModal}
+        >
+          <FaEdit className="inline mr-1" /> Edit
+        </button>
+        <button 
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300"
+          onClick={openDeleteModal}
+        >
+          <FaTrash className="inline mr-1" /> Delete
+        </button>
+      </div>
 
       <hr className="my-6 border-t-2 border-gray-300" />
       
@@ -206,7 +307,7 @@ const MyAdDetailsProvide = () => {
       </ul>
 
       {isModalOpen && profileData && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="mt-16 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Profile Information</h2>
@@ -230,13 +331,6 @@ const MyAdDetailsProvide = () => {
               className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300"
             >
               Show Reviews
-            </button>
-
-            <button 
-              onClick={closeModal} 
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
-            >
-              Close
             </button>
 
           </div>
@@ -267,6 +361,113 @@ const MyAdDetailsProvide = () => {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+      )}
+
+{isEditModalOpen && (
+        <div className="mt-16 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Edit Ad</h2>
+              <button onClick={closeEditModal} className="text-gray-500 hover:text-gray-700">
+                <FaTimes />
+              </button>
+            </div>
+            <form onSubmit={handleEditSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700">Title</label>
+                <input 
+                  type="text" 
+                  name="adTitle" 
+                  value={editFormData.adTitle} 
+                  onChange={handleEditChange} 
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Category</label>
+                <input 
+                  type="text" 
+                  name="adCategory" 
+                  value={editFormData.adCategory} 
+                  onChange={handleEditChange} 
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Description</label>
+                <textarea 
+                  name="adDescription" 
+                  value={editFormData.adDescription} 
+                  onChange={handleEditChange} 
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Location</label>
+                <input 
+                  type="text" 
+                  name="adLocation" 
+                  value={editFormData.adLocation} 
+                  onChange={handleEditChange} 
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Image URL</label>
+                <input 
+                  type="text" 
+                  name="imageUrl" 
+                  value={editFormData.imageUrl} 
+                  onChange={handleEditChange} 
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="flex justify-end space-x-2">
+                <button 
+                  type="submit" 
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+                >
+                  Save
+                </button>
+                <button 
+                  type="button" 
+                  onClick={closeEditModal} 
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+{isDeleteModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Confirm Deletion</h2>
+              <button onClick={closeDeleteModal} className="text-gray-500 hover:text-gray-700">
+                <FaTimes />
+              </button>
+            </div>
+            <p>Are you sure you want to delete this ad?</p>
+            <div className="flex justify-end mt-4 space-x-2">
+              <button 
+                onClick={handleDeleteAd} 
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300"
+              >
+                Delete
+              </button>
+              <button 
+                onClick={closeDeleteModal} 
+                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-300"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

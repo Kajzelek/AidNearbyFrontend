@@ -11,11 +11,31 @@ const CreateAdForm = () => {
   // const [base64Image, setBase64Image] = useState('');
 
   const categories = [
-    { adCategoryId: 1, categoryName: 'Electronics' }, 
-    { adCategoryId: 2, categoryName: 'Furniture' },
-    { adCategoryId: 3, categoryName: 'Vehicles' },
-    { adCategoryId: 4, categoryName: 'Jobs' },
-    { adCategoryId: 5, categoryName: 'Services' },
+    { adCategoryId: 1, categoryName: 'Elektronika' },
+    { adCategoryId: 2, categoryName: 'Ubrania' },
+    { adCategoryId: 3, categoryName: 'Meble' },
+    { adCategoryId: 4, categoryName: 'Services' },
+    { adCategoryId: 5, categoryName: 'Transport' },
+    { adCategoryId: 6, categoryName: 'Zakupy' },
+    { adCategoryId: 7, categoryName: 'Opieka nad dziećmi' },
+    { adCategoryId: 8, categoryName: 'Opieka nad zwierzętami' },
+    { adCategoryId: 9, categoryName: 'Sprzątanie' },
+    { adCategoryId: 10, categoryName: 'Gotowanie' },
+    { adCategoryId: 11, categoryName: 'Naprawy domowe' },
+    { adCategoryId: 12, categoryName: 'Pomoc w nauce' },
+    { adCategoryId: 14, categoryName: 'Ogrodnictwo' },
+    { adCategoryId: 15, categoryName: 'Pomoc techniczna' },
+    { adCategoryId: 16, categoryName: 'Wsparcie emocjonalne' },
+    { adCategoryId: 17, categoryName: 'Pomoc medyczna' },
+    { adCategoryId: 18, categoryName: 'Prace remontowe' },
+    { adCategoryId: 19, categoryName: 'Przeprowadzki' },
+    { adCategoryId: 20, categoryName: 'Wypożyczanie narzędzi' },
+    { adCategoryId: 21, categoryName: 'Wypożyczanie sprzętu' },
+    { adCategoryId: 22, categoryName: 'Kursy i szkolenia' },
+    { adCategoryId: 23, categoryName: 'Pomoc prawna' },
+    { adCategoryId: 24, categoryName: 'Doradztwo finansowe' },
+    { adCategoryId: 25, categoryName: 'Tłumaczenia' },
+    { adCategoryId: 26, categoryName: 'Inne' },
   ];
 
   const apiClient = axios.create({

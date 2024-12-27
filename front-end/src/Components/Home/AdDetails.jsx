@@ -1,11 +1,65 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { FaUser, FaEnvelope, FaStar, FaTimes } from 'react-icons/fa';
 
 const AdDetails = () => {
   const { adId } = useParams();
   const [ad, setAd] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
+  const [profileData, setProfileData] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [userMessage, setUserMessage] = useState('');
+
+  const openProfileModal = async () => {
+    // Fetch profile data
+    const response = await fetch(`http://localhost:8080/getProfile?userId=${ad.userId}`);
+    const data = await response.json();
+    setProfileData(data);
+    setIsProfileModalOpen(true);
+  };
+
+  const closeProfileModal = () => {
+    setIsProfileModalOpen(false);
+    setProfileData(null);
+  };
+
+  const openApplicationModal = () => {
+    setIsApplicationModalOpen(true);
+  };
+
+  const closeApplicationModal = () => {
+    setIsApplicationModalOpen(false);
+    setUserMessage('');
+  };
+
+  const handleApplicationSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    const adApplicationDTO = {
+      userMessage,
+      adId: ad.adId
+    };
+
+    const response = await fetch('http://localhost:8080/api/adApplications/createAdApplication', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(adApplicationDTO)
+    });
+
+    if (response.ok) {
+      closeApplicationModal();
+    } else {
+      console.error('Error submitting application');
+    }
+  };
+
 
   useEffect(() => {
     const fetchAdDetails = async () => {
@@ -75,10 +129,80 @@ const AdDetails = () => {
               <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300">
                 Zgłoś się
               </button>
+
+              <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300" onClick={openApplicationModal}>
+                Zgłoś się
+              </button>
+              <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300" onClick={openProfileModal}>
+                Pokaż profil
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+
+      {isProfileModalOpen && profileData && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Profile Information</h2>
+
+              <button onClick={closeProfileModal} className="text-gray-500 hover:text-gray-700">
+                <FaTimes />
+              </button>
+            </div>
+            <img src={profileData.profilePicture || "https://via.placeholder.com/150"} alt="Profile" className="w-32 h-32 rounded-full mx-auto mb-4" />
+            <p><strong>Name:</strong> {profileData.firstName} {profileData.lastName}</p>
+            <p><strong>Age:</strong> {profileData.age}</p>
+            <p><strong>Email:</strong> {profileData.email}</p>
+            <p><strong>Phone:</strong> {profileData.phoneNumber}</p>
+            <p><strong>Address:</strong> {profileData.address}</p>
+            <p><strong>Bio:</strong> {profileData.bio}</p>
+          </div>
+        </div>
+      )}
+
+      {isApplicationModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Zgłoszenie</h2>
+              <button onClick={closeApplicationModal} className="text-gray-500 hover:text-gray-700">
+                <FaTimes />
+              </button>
+            </div>
+            <form onSubmit={handleApplicationSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700">Wiadomość</label>
+                <textarea 
+                  name="userMessage" 
+                  value={userMessage} 
+                  onChange={(e) => setUserMessage(e.target.value)} 
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="flex justify-end space-x-2">
+                <button 
+                  type="submit" 
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+                >
+                  Wyślij
+                </button>
+                <button 
+                  type="button" 
+                  onClick={closeApplicationModal} 
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-300"
+                >
+                  Anuluj
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 };
