@@ -1,4 +1,6 @@
 import './App.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import React, { useEffect } from 'react';
 import LoginSignup from './Components/LoginSignup/LoginSignup.css';
 import Register from './Components/LoginSignup/Register';
@@ -183,6 +185,7 @@ function App() {
     </Routes>
     </LocationProvider>
   );
+  
 }
 
 export default App;

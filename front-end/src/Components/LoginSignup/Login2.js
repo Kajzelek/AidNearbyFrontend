@@ -3,6 +3,9 @@ import axios from '../../api/axios';
 import useAuth from '../../hooks/useAuth';
 import {Link, useNavigate, useLocation} from 'react-router-dom';
 import { useLocationContext } from '../../context/LocationContext';
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const LOGIN_URL = '/login';
@@ -85,7 +88,16 @@ const Login = () => {
             } else if (err.response?.status === 400) {
                 setErrMsg('Missing Username or Password');
             } else if (err.response?.status === 401) {
-                setErrMsg('Unauthorized');
+                toast.error('Missing Username or Password', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                //setErrMsg('Unauthorized');
             } else {
                 setErrMsg('Login Failed');
             }
@@ -102,7 +114,7 @@ return (
 
     <section class="bg-gray-50 min-h-screen flex items-center justify-center">
 
-        
+        <ToastContainer />
         <div class="bg-gray-100 flex rounded-2xl shadow-lg max-w-3xl p-5 items-center">
 
         <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p> 
