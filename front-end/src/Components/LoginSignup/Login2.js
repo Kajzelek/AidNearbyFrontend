@@ -16,7 +16,7 @@ const Login = () => {
     const { setLocation } = useLocationContext();
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location?.state?.from || { pathname: '/hp3' };
+    const from = location?.state?.from || { pathname: '/' };
     const userRef = useRef();
     const errRef = useRef();
     
@@ -114,9 +114,8 @@ return (
 
     <section class="bg-gray-50 min-h-screen flex items-center justify-center">
 
-        <ToastContainer />
+        
         <div class="bg-gray-100 flex rounded-2xl shadow-lg max-w-3xl p-5 items-center">
-
         <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p> 
         
 

@@ -71,15 +71,23 @@ function App() {
   ];
   
   return (
+    
     <LocationProvider>
     <Routes>
+    
       <Route path="/" element={<Layout />}>
-        
+      
         {/* Public routes */}
-        <Route path="login" element={<Login />} />
-        <Route path="login2" element={<Login2 />} />
+        {/* <Route path="login" element={<Login />} /> */}
+        <Route path="login" element={
+          <div>
+            <Login2 />
+            <ToastContainer />
+          </div>}
+        />
         <Route path="register" element={<Register />} />
         <Route path="register2" element={<Register2 />} />
+        
         
         {/* Protected routes */}
         {/* User routes */}
@@ -93,6 +101,7 @@ function App() {
                 <MainSection />
               </main>
               <Footer />
+              <ToastContainer />
             </div>
           } />
 
@@ -182,6 +191,7 @@ function App() {
         {/* Catch others */}
         {/* <Route path="*" element={<Missing />} /> */}
       </Route>
+      
     </Routes>
     </LocationProvider>
   );

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { FaUser, FaEnvelope, FaCheck, FaTimes, FaStar, FaEdit, FaTrash } from 'react-icons/fa'
+import { FaUser, FaEnvelope, FaCheck, FaTimes, FaStar, FaEdit, FaTrash, FaCheckCircle } from 'react-icons/fa'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const MyAdDetailsProvide = () => {
 
@@ -25,6 +28,7 @@ const MyAdDetailsProvide = () => {
     adLocation: '',
     imageUrl: ''
   });
+  const [activeView, setActiveView] = useState('new');
 
   useEffect(() => {
     const fetchAdDetails = async () => {
@@ -134,9 +138,11 @@ const MyAdDetailsProvide = () => {
       console.log(updatedApplicant)
       setApplicants(applicants.map(applicant => 
         applicant.applicantId === updatedApplicant.adApplicationId ? updatedApplicant : applicant
-      ))
+      ));
+      toast.success(`Status aplikacji został zmieniony na ${status}`);
     } catch (error) {
-      console.error('Error updating application status:', error)
+      console.error('Error updating application status:', error);
+      toast.error('Wystąpił błąd podczas zmiany statusu aplikacji');
     }
   }
 
@@ -242,8 +248,15 @@ const MyAdDetailsProvide = () => {
     return <p>Ogłoszenie nie zostało znalezione</p>
   }
 
+  const filteredApplicants = activeView === 'in-progress'
+  ? applicants.filter(applicant => applicant.application_status === 'ACCEPTED')
+  : activeView === 'finished'
+  ? applicants.filter(applicant => applicant.application_status === 'FINISHED')
+  : applicants.filter(applicant => applicant.application_status === 'ROZPATRYWANE');
+
   return (
     <div className="p-6 mt-16 max-w-4xl mx-auto">
+      <ToastContainer />
       <div className="text-center">
         <img src={adDetails.imageUrl || "https://via.placeholder.com/800x400"} alt="Ad" className="max-w-full h-auto mx-auto" />
       </div>
@@ -270,39 +283,110 @@ const MyAdDetailsProvide = () => {
 
       <hr className="my-6 border-t-2 border-gray-300" />
       
-      <h2 className="text-xl font-semibold mt-6 ">Applicants</h2>
+
+      <div className="mt-6 flex space-x-4">
+        <button 
+          className={`px-4 py-2 rounded ${activeView === 'new' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+          onClick={() => setActiveView('new')}
+        >
+          Nowe aplikacje
+        </button>
+
+        <button 
+          className={`px-4 py-2 rounded ${activeView === 'in-progress' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+          onClick={() => setActiveView('in-progress')}
+        >
+          Aplikacje w toku
+        </button>
+
+        <button 
+          className={`px-4 py-2 rounded ${activeView === 'finished' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+          onClick={() => setActiveView('finished')}
+        >
+          Zakończone aplikacje
+        </button>
+      </div>
+
       <ul className="list-none p-0  mt-4">
-        {applicants.map(applicant => (
+        {filteredApplicants.map(applicant => (
           <li key={applicant.applicantId} className="border border-gray-300 p-4 mb-4 rounded-lg">
-            <p className="font-bold">{applicant.userMessage}</p>
-            <p className="text-gray-700 mb-2"><strong>Status:</strong> {applicant.application_status}</p>
-            <p className="text-gray-700 mb-2"><strong>Created At:</strong> {new Date(applicant.createdAt).toLocaleDateString()}</p>
-            <div className="mt-2 space-x-2">
-              {/* <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"><FaUser className="inline mr-1" /> See Profile</button> */}
-              <button 
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
-                onClick={() => openModal(applicant)}
-              >
-                <FaUser className="inline mr-1" /> See Profile
-              </button>
-              <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300"><FaEnvelope className="inline mr-1" /> Send Message</button>
-
-
-              <button 
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
-                onClick={() => updateApplicationStatus(applicant.adApplicationId, 'ACCEPTED')}
-              >
-                <FaCheck className="inline mr-1" /> Make a help
-              </button>
-
-              <button 
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300"
-                onClick={() => updateApplicationStatus(applicant.adApplicationId, 'REJECTED')}
-              >
-                <FaTimes className="inline mr-1" /> Reject a help
-              </button>
-            </div>
-          </li>
+          {activeView === 'new' ? (
+            <>
+              <p className="font-bold">{applicant.userMessage}</p>
+              <hr className="my-6 border-t-2 border-gray-300" />
+              <p className="text-gray-700 mb-2"><strong>Status:</strong> {applicant.application_status}</p>
+              <p className="text-gray-700 mb-2"><strong>Created At:</strong> {new Date(applicant.createdAt).toLocaleDateString()}</p>
+              <div className="mt-2 space-x-2">
+                <button 
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                  onClick={() => openModal(applicant)}
+                >
+                  <FaUser className="inline mr-1" /> Zobacz profil
+                </button>
+                <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300">
+                  <FaEnvelope className="inline mr-1" /> Wyślij wiadomość
+                </button>
+                <button 
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+                  onClick={() => updateApplicationStatus(applicant.adApplicationId, 'ACCEPTED')}
+                >
+                  <FaCheck className="inline mr-1" /> Udziel pomocy
+                </button>
+                <button 
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300"
+                  onClick={() => updateApplicationStatus(applicant.adApplicationId, 'REJECTED')}
+                >
+                  <FaTimes className="inline mr-1" /> Odrzuć
+                </button>
+              </div>
+            </>
+          ) : activeView === 'in-progress' ? (
+            <>
+              <p className="font-bold">{applicant.userMessage}</p>
+              <hr className="my-6 border-t-2 border-gray-300" />
+              <p className="text-gray-700 mb-2"><strong>Status zgłoszenia:</strong> {applicant.application_status}</p>
+              <p className="text-gray-700 mb-2"><strong>Data zgłoszenia:</strong> {new Date(applicant.createdAt).toLocaleDateString()}</p>
+              <p className="text-gray-700 mb-2"><strong>Rozpoczęto pomoc:</strong> {new Date(applicant.submittedAt).toLocaleDateString()}</p>
+              <div className="mt-2 space-x-2">
+                <button 
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                  onClick={() => openModal(applicant)}
+                >
+                  <FaUser className="inline mr-1" /> Zobacz profil
+                </button>
+                <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300">
+                  <FaEnvelope className="inline mr-1" /> Skontaktuj się
+                </button>
+                <button 
+                  className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition duration-300"
+                  onClick={() => updateApplicationStatus(applicant.adApplicationId, 'FINISHED')}
+                >
+                  <FaCheckCircle className="inline mr-1" /> Zakończ pomoc
+                </button>
+              </div>
+            </>
+          ): (
+            <>
+              <p className="font-bold">{applicant.userMessage}</p>
+              <hr className="my-6 border-t-2 border-gray-300" />
+              <p className="text-gray-700 mb-2"><strong>Status zgłoszenia:</strong> {applicant.application_status}</p>
+              <p className="text-gray-700 mb-2"><strong>Data zgłoszenia:</strong> {new Date(applicant.createdAt).toLocaleDateString()}</p>
+              <p className="text-gray-700 mb-2"><strong>Rozpoczęto pomoc:</strong> {new Date(applicant.submittedAt).toLocaleDateString()}</p>
+              <p className="text-gray-700 mb-2"><strong>Zakończono pomoc:</strong> {new Date(applicant.finishedAt).toLocaleDateString()}</p>
+              <div className="mt-2 space-x-2">
+                <button 
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                  onClick={() => openModal(applicant)}
+                >
+                  <FaUser className="inline mr-1" /> Zobacz profil
+                </button>
+                <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300">
+                  <FaEnvelope className="inline mr-1" /> Skontaktuj się
+                </button>
+              </div>
+            </>
+          )}
+        </li>
         ))}
       </ul>
 

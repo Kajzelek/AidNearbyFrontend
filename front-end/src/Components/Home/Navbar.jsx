@@ -2,14 +2,34 @@ import React, { useState } from 'react';
 import { BsPerson } from 'react-icons/bs';
 import { AiOutlineClose } from 'react-icons/ai';
 import { HiOutlineMenuAlt4 } from 'react-icons/hi';
-import { Link } from 'react-router-dom'; // Jeśli korzystasz z React Router
+import { Link, useNavigate } from 'react-router-dom'; // Jeśli korzystasz z React Router
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const navigate = useNavigate()
 
   const handleNav = () => setNav(!nav);
   const toggleProfileMenu = () => setShowProfileMenu(!showProfileMenu);
+
+  const handleLogout = () => {
+    // Wylogowanie użytkownika
+    localStorage.removeItem('token')
+    // Wyświetlenie toast
+    toast.success('Zostałeś wylogowany!', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    })
+    // Przekierowanie na stronę logowania
+    navigate('/login', { replace: true })
+  }
   
 
 
@@ -52,6 +72,8 @@ const Navbar = () => {
 
         {/* Profile Icon */}
         <div className="relative hidden md:block">
+
+        
   <BsPerson
     size={24}
     className="text-gray-700 cursor-pointer"
@@ -68,10 +90,12 @@ const Navbar = () => {
         </li>
         <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
           <button
-            onClick={() => {
-              localStorage.removeItem('token'); // Wylogowanie
-              window.location.reload(); // Odświeżenie strony
-            }}
+            // onClick={() => {
+            //   localStorage.removeItem('token'); // Wylogowanie
+            //   window.location.reload(); // Odświeżenie strony
+        
+            // }}
+            onClick={handleLogout} 
           >
             Logout
           </button>
@@ -130,7 +154,7 @@ const Navbar = () => {
           <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
             Account
           </button>
-          <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
+          <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300" >
             Logout
           </button>
         </div>
