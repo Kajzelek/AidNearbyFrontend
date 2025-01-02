@@ -27,7 +27,9 @@ import AdsPage from './Components/Home/AdsPage';
 import MyApplicationsPage from './Components/Home/MyApplicationsPage';
 import  MyAdsPage from './Components/Home/MyAdsPage';
 import MyAdDetailsProvide from './Components/Home/MyAdDetailsProvide';
-import ChatPage from './Components/Home/ChatPage';
+import ChatComponent from './Components/Home/ChatComponent';
+
+
 
 
 const ROLES = {
@@ -179,11 +181,11 @@ function App() {
 
         <Route path="/chat" element={
               <div className="flex flex-col min-h-screen">
-                <Navbar />
+                  <Navbar />
                   <main className="flex-grow bg-gray-100">
-                    <ChatPage/>
+                    <ChatComponent/>
                   </main>
-                <Footer />
+                
               </div>
         } />
           

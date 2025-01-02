@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { FaUser, FaEnvelope, FaStar, FaTimes } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const AdDetails = () => {
   const { adId } = useParams();
@@ -17,6 +18,7 @@ const AdDetails = () => {
   const [userMessage, setUserMessage] = useState('');
   const [hasApplied, setHasApplied] = useState(false);
   const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const openProfileModal = async () => {
     const token = localStorage.getItem("token");
@@ -152,6 +154,51 @@ const AdDetails = () => {
     setReviews([])
   }
 
+  const handleConversation = async (secondUserId) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`http://localhost:8080/conversations/checkIfConversationExists?user2Id=${secondUserId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log(data);
+        
+
+        if (data) {
+            navigate('/chat');
+        } else {
+            const newConversationResponse = await fetch('http://localhost:8080/conversations/createConversation', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify({ 
+                    user2: secondUserId,
+                 }),
+            });
+
+            if (newConversationResponse.status === 201) {
+                navigate('/chat');
+                console.log(secondUserId);
+            } else {
+                throw new Error('Failed to create new conversation');
+            }
+        }
+    } catch (error) {
+        console.error('Błąd podczas obsługi konwersacji:', error);
+    }
+};
+
 
   if (loading) {
     return <p>Loading...</p>;
@@ -184,9 +231,14 @@ const AdDetails = () => {
             {ad.adLocation && <p className="text-gray-700 mb-2"><strong>Lokalizacja:</strong> {ad.adLocation}</p>}
             {/* Dodaj inne szczegóły ogłoszenia tutaj */}
             <div className="mt-6 flex space-x-4">
-              <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">
+
+              <button 
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                onClick={() => handleConversation(ad.userId)}
+              >
                 Napisz wiadomość
               </button>
+
               <button 
                 className={`bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300 ${hasApplied ? 'cursor-not-allowed' : ''}"`} 
                 onClick={openApplicationModal}
@@ -215,7 +267,7 @@ const AdDetails = () => {
         </div>
 
         {isReviewsModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="mt-16 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Opinie użytkowników</h2>

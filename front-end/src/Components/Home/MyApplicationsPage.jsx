@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaClock, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaClock, FaCheck, FaTimes, FaStar } from 'react-icons/fa';
 import ReviewModal from '../modals/ReviewModal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -145,6 +145,46 @@ const MyApplicationsPage = () => {
         ));
     };
 
+    // const renderFinishedApplications = (applications) => {
+    //     if (!applications) return null;
+    //     return applications.map(application => {
+    //         const adDetail = adDetails[application.adId];
+    //         if (!adDetail) {
+    //             return <div key={application.id}>Loading...</div>;
+    //         }
+    //         return (
+    //             <div key={application.id}>
+    //                 <p>{application.name}</p>
+    //                 {adDetail.helpType === 'PROVIDE' ? (
+    //                     <div>
+    //                         <p>Provide Help: {application.name}</p>
+    //                         {/* Additional details for PROVIDE */}
+    //                     </div>
+    //                 ) : (
+    //                     <div>
+    //                         <p>Looking for Help: {application.name}</p>
+    //                         {/* Additional details for LOOKING_FOR */}
+    //                         {applicationReviews[application.id] && (
+    //                             <div>
+    //                                 <p>Rating: {applicationReviews[application.id].rating}</p>
+    //                                 <p>Comment: {applicationReviews[application.id].comment}</p>
+    //                             </div>
+    //                         )}
+    //                         {!reviewedApplications.includes(application.id) && (
+    //                             <button
+    //                                 onClick={() => handleAddReview(application.id)}
+    //                                 className="mt-4 px-4 py-2 rounded shadow bg-blue-500 text-white hover:bg-blue-600"
+    //                             >
+    //                                 <FaStar className="inline mr-1" /> Oceń pomoc
+    //                             </button>
+    //                         )}
+    //                     </div>
+    //                 )}
+    //             </div>
+    //         );
+    //     });
+    // };
+
       const fetchAdById = async (adId) => {
         const token = localStorage.getItem("token");
         try {
@@ -227,10 +267,10 @@ const MyApplicationsPage = () => {
             {activeTab === 'FINISHED' && (
                 <div className="flex justify-center mb-6">
                     <button onClick={() => setFinishedView('PROVIDE')} className={`px-4 py-2 ${finishedView === 'PROVIDE' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} rounded-l`}>
-                        PROVIDE
+                        OGŁOSZENIA, GDZIE KORZYSTAŁEM Z POMOCY
                     </button>
                     <button onClick={() => setFinishedView('LOOKING_FOR')} className={`px-4 py-2 ${finishedView === 'LOOKING_FOR' ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-700'} rounded-r`}>
-                        LOOKING FOR
+                        OGŁOSZENIA Z POMOCĄ, KTÓRĄ SIĘ PODZIELIŁEM
                     </button>
                 </div>
             )}
@@ -240,6 +280,7 @@ const MyApplicationsPage = () => {
                     <p>Ładowanie...</p>
                 ) : activeTab === 'FINISHED' ? (
                     <div>
+                        {/* {renderFinishedApplications(filteredApplications)} */}
                         {renderApplications(filteredApplications)}
                         <ReviewModal
                             isOpen={reviewModalOpen}

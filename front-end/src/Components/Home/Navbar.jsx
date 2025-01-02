@@ -48,11 +48,11 @@ const Navbar = () => {
               Home
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link to="/profile" className="hover:text-blue-600 transition">
               My Profile
             </Link>
-          </li>
+          </li> */}
           <li>
             <Link to="/ads" className="hover:text-blue-600 transition">
               Ads
@@ -64,8 +64,8 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link to="/help" className="hover:text-blue-600 transition">
-              Help
+            <Link to="/chat" className="hover:text-blue-600 transition">
+              Chat
             </Link>
           </li>
         </ul>
@@ -93,7 +93,6 @@ const Navbar = () => {
             // onClick={() => {
             //   localStorage.removeItem('token'); // Wylogowanie
             //   window.location.reload(); // Odświeżenie strony
-        
             // }}
             onClick={handleLogout} 
           >

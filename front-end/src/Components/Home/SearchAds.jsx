@@ -40,6 +40,7 @@ const SearchAds = () => {
         }
       );
       const data = await response.json();
+      console.log(`http://localhost:8080/api/ads/search?category=${category}&latitude=${location.latitude}&longitude=${location.longitude}&radius=${radius}`);
       setAds(data);
       setCurrentPage(1); // Resetuj stronę do pierwszej po nowym wyszukiwaniu
     } catch (error) {

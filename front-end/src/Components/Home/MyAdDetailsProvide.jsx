@@ -3,7 +3,10 @@ import { FaUser, FaEnvelope, FaCheck, FaTimes, FaStar, FaEdit, FaTrash, FaCheckC
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
+import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
+
+
 
 
 const MyAdDetailsProvide = () => {
@@ -59,9 +62,6 @@ const MyAdDetailsProvide = () => {
         setLoading(false)
       }
     }
-
-  
-
 
     const fetchApplicants = async () => {
       const token = localStorage.getItem("token")
@@ -236,6 +236,52 @@ const MyAdDetailsProvide = () => {
     }
   };
 
+
+  const handleConversation = async (secondUserId) => {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`http://localhost:8080/conversations/checkIfConversationExists?user2Id=${secondUserId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log(data);
+        
+
+        if (data) {
+            navigate('/chat');
+        } else {
+            const newConversationResponse = await fetch('http://localhost:8080/conversations/createConversation', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify({ 
+                    user2: secondUserId,
+                 }),
+            });
+
+            if (newConversationResponse.status === 201) {
+                navigate('/chat');
+                console.log(secondUserId);
+            } else {
+                throw new Error('Failed to create new conversation');
+            }
+        }
+    } catch (error) {
+        console.error('Błąd podczas obsługi konwersacji:', error);
+    }
+};
+
   if (loading) {
     return <p>Loading...</p>
   }
@@ -323,20 +369,22 @@ const MyAdDetailsProvide = () => {
                 >
                   <FaUser className="inline mr-1" /> Zobacz profil
                 </button>
-                <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300">
-                  <FaEnvelope className="inline mr-1" /> Wyślij wiadomość
+                <button 
+                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300"
+                onClick={() => handleConversation(applicant.applicantId)}>
+                  <FaEnvelope className="inline mr-1" /> Skontaktuj się
                 </button>
                 <button 
                   className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
                   onClick={() => updateApplicationStatus(applicant.adApplicationId, 'ACCEPTED')}
                 >
-                  <FaCheck className="inline mr-1" /> Udziel pomocy
+                  <FaCheck className="inline mr-1" /> {adDetails.helpType === 'LOOKING_FOR' ? 'Przyjmij pomoc' : 'Udziel pomocy'}
                 </button>
                 <button 
                   className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300"
                   onClick={() => updateApplicationStatus(applicant.adApplicationId, 'REJECTED')}
                 >
-                  <FaTimes className="inline mr-1" /> Odrzuć
+                  <FaTimes className="inline mr-1" /> {adDetails.helpType === 'LOOKING_FOR' ? 'Odrzuć pomoc' : 'Nie pomagaj'}
                 </button>
               </div>
             </>
@@ -354,7 +402,10 @@ const MyAdDetailsProvide = () => {
                 >
                   <FaUser className="inline mr-1" /> Zobacz profil
                 </button>
-                <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300">
+                <button 
+                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300"
+                onClick={() => handleConversation(applicant.applicantId)}
+                >
                   <FaEnvelope className="inline mr-1" /> Skontaktuj się
                 </button>
                 <button 
@@ -380,9 +431,20 @@ const MyAdDetailsProvide = () => {
                 >
                   <FaUser className="inline mr-1" /> Zobacz profil
                 </button>
-                <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300">
+                <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300"
+                onClick={() => handleConversation(applicant.applicantId)}>
+                  
                   <FaEnvelope className="inline mr-1" /> Skontaktuj się
                 </button>
+
+                {adDetails.helpType === 'LOOKING_FOR' && (
+                    <button 
+                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+                        // onClick={() => handleReview(applicant.applicantId)}
+                    >
+                        <FaStar className="inline mr-1" /> Oceń pomoc
+                    </button>
+                )}
               </div>
             </>
           )}
