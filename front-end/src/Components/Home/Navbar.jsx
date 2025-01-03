@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BsPerson } from 'react-icons/bs';
+import React, { useState, useEffect } from 'react';
+import { BsPerson, BsBell } from 'react-icons/bs';
 import { AiOutlineClose } from 'react-icons/ai';
 import { HiOutlineMenuAlt4 } from 'react-icons/hi';
 import { Link, useNavigate } from 'react-router-dom'; // Jeśli korzystasz z React Router
@@ -9,10 +9,13 @@ import 'react-toastify/dist/ReactToastify.css'
 const Navbar = () => {
   const [nav, setNav] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate()
 
   const handleNav = () => setNav(!nav);
   const toggleProfileMenu = () => setShowProfileMenu(!showProfileMenu);
+  const toggleNotifications = () => setShowNotifications(!showNotifications);
 
   const handleLogout = () => {
     // Wylogowanie użytkownika
@@ -31,6 +34,64 @@ const Navbar = () => {
     navigate('/login', { replace: true })
   }
   
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch('http://localhost:8080/api/notifications/getNotifications', {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        setNotifications(data);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  const handleDeleteNotification = async (notificationId) => {
+    const token = localStorage.getItem("token");
+    try {
+      await fetch(`http://localhost:8080/api/notifications/deleteNotification/${notificationId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      // Aktualizacja stanu notifications, aby usunięte powiadomienie natychmiast zniknęło z widoku
+      setNotifications(notifications.filter(notification => notification.notificationId !== notificationId));
+      toast.success('Notification deleted');
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      toast.error('Error deleting notification');
+    }
+  };
+
+  const handleDeleteAllNotifications = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      await fetch('http://localhost:8080/api/notifications/deleteAllNotifications', {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      setNotifications([]);
+      toast.success('All notifications deleted');
+    } catch (error) {
+      console.error('Error deleting all notifications:', error);
+      toast.error('Error deleting all notifications');
+    }
+  };
+
 
 
   return (
@@ -72,6 +133,48 @@ const Navbar = () => {
 
         {/* Profile Icon */}
         <div className="relative hidden md:block">
+        
+        <div className="relative hidden md:flex items-center space-x-4">
+
+        <BsBell
+            size={24}
+            className="text-gray-700 cursor-pointer"
+            onClick={toggleNotifications}
+          />
+          {showNotifications && (
+            <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-lg border z-10 transform -translate-x-1/2 left-1/2 sm:left-auto sm:right-0 sm:translate-x-0">
+              <div className="p-4">
+                <h3 className="text-lg font-bold mb-2">Notifications</h3>
+                {notifications.length > 0 ? (
+                  <ul className="text-gray-700 text-sm">
+                    {notifications.map(notification => (
+                      <li key={notification.notificationId} className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                        <div>
+                          <p>
+                          {notification.notificationType === 'NEW_AD' ? 'Nowe ogłoszenie w okolicy!' :
+                             notification.notificationType === 'NEW_APPLICATION' ? 'Nowa aplikacja w twoim ogłoszeniu!' :
+                             notification.notificationType === 'NEW_MESSAGE' ? 'Masz nową wiadomość!' :
+                             'Nieznany typ powiadomienia'}
+                          </p>
+                          <p className="text-xs text-gray-500">{new Date(notification.createdAt).toLocaleString()}</p>
+                        </div>
+                        <button onClick={() => handleDeleteNotification(notification.notificationId)} className="text-red-500 hover:text-red-700">
+                          <AiOutlineClose size={16} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">No notifications</p>
+                )}
+                {notifications.length > 0 && (
+                  <button onClick={handleDeleteAllNotifications} className="mt-4 w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300">
+                    Clear All
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
         
   <BsPerson
@@ -102,17 +205,69 @@ const Navbar = () => {
       </ul>
     </div>
   )}
+  </div>
 </div>
 
         {/* Hamburger Icon */}
-        <div className="md:hidden" onClick={handleNav}>
+        {/* <div className="md:hidden" onClick={handleNav}>
           {nav ? (
             <AiOutlineClose size={24} className="text-gray-700" />
           ) : (
             <HiOutlineMenuAlt4 size={24} className="text-gray-700" />
           )}
         </div>
+      </div> */}
+
+      <div className="md:hidden flex items-center space-x-4">
+          <BsBell
+            size={24}
+            className="text-gray-700 cursor-pointer"
+            onClick={toggleNotifications}
+          />
+          {showNotifications && (
+            <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-lg border z-10 transform -translate-x-1/2 left-1/2 sm:left-auto sm:right-0 sm:translate-x-0">
+              <div className="p-4">
+                <h3 className="text-lg font-bold mb-2">Notifications</h3>
+                {notifications.length > 0 ? (
+                  <ul className="text-gray-700 text-sm">
+                    {notifications.map(notification => (
+                      <li key={notification.notificationId} className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                        <div>
+                          <p>
+                          {notification.notificationType === 'NEW_AD' ? 'Nowe ogłoszenie w okolicy!' :
+                             notification.notificationType === 'NEW_APPLICATION' ? 'Nowa aplikacja w twoim ogłoszeniu!' :
+                             notification.notificationType === 'NEW_MESSAGE' ? 'Masz nową wiadomość!' :
+                             'Nieznany typ powiadomienia'}
+                          </p>
+                          <p className="text-xs text-gray-500">{new Date(notification.createdAt).toLocaleString()}</p>
+                        </div>
+                        <button onClick={() => handleDeleteNotification(notification.notificationId)} className="text-red-500 hover:text-red-700">
+                          <AiOutlineClose size={16} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">No notifications</p>
+                )}
+                {notifications.length > 0 && (
+                  <button onClick={handleDeleteAllNotifications} className="mt-4 w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300">
+                    Clear All
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+          <div onClick={handleNav}>
+            {nav ? (
+              <AiOutlineClose size={24} className="text-gray-700" />
+            ) : (
+              <HiOutlineMenuAlt4 size={24} className="text-gray-700" />
+            )}
+          </div>
+        </div>
       </div>
+
 
       {/* Mobile Menu */}
       <div
@@ -143,8 +298,8 @@ const Navbar = () => {
           </li>
           
           <li>
-            <Link to="/help" onClick={handleNav} className="hover:text-blue-600 transition">
-              Help
+            <Link to="/chat" onClick={handleNav} className="hover:text-blue-600 transition">
+              Chat
             </Link>
           </li>
         </ul>
