@@ -282,6 +282,30 @@ const MyAdDetailsProvide = () => {
     }
 };
 
+const closeAd = async () => {
+  const token = localStorage.getItem("token");
+  try {
+      const response = await fetch(`http://localhost:8080/api/ads/closeAd?adId=${adId}`, {
+          method: "PUT",
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+          },
+      });
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+          
+      }
+      const data = await response.json();
+      setAdDetails(data);
+      toast.success('Ogłoszenie zostało zakończone');
+      // Optionally, you can navigate or update the UI to reflect the closed ad
+  } catch (error) {
+      console.error('Error closing ad:', error);
+      toast.error('Błąd podczas zamykania ogłoszenia');
+  }
+};
+
   if (loading) {
     return <p>Loading...</p>
   }
@@ -317,14 +341,21 @@ const MyAdDetailsProvide = () => {
           className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300"
           onClick={openEditModal}
         >
-          <FaEdit className="inline mr-1" /> Edit
+          <FaEdit className="inline mr-1" /> Edytuj
         </button>
         <button 
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300"
           onClick={openDeleteModal}
         >
-          <FaTrash className="inline mr-1" /> Delete
+          <FaTrash className="inline mr-1" /> Usuń
         </button>
+
+        <button 
+                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+                    onClick={closeAd}
+                >
+                    <FaCheck className="inline mr-1" /> Zakończ ogłoszenie
+                </button>
       </div>
 
       <hr className="my-6 border-t-2 border-gray-300" />
@@ -414,6 +445,8 @@ const MyAdDetailsProvide = () => {
                 >
                   <FaCheckCircle className="inline mr-1" /> Zakończ pomoc
                 </button>
+
+                
               </div>
             </>
           ): (

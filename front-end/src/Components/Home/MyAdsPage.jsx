@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const MyAdsPage = () => {
   const [activeTab, setActiveTab] = useState('ACTIVE');
-  const [ads, setAds] = useState({ ACTIVE: [], FINISHED: [] });
+  const [ads, setAds] = useState({ ACTIVE: [], INACTIVE: [] });
   const [filter, setFilter] = useState('ALL');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -30,7 +30,7 @@ const MyAdsPage = () => {
     };
 
     fetchAds('ACTIVE');
-    fetchAds('FINISHED');
+    fetchAds('INACTIVE');
   }, []);
 
   const handleAdClick = (adId) => {
@@ -84,8 +84,8 @@ const MyAdsPage = () => {
           <FaCheckCircle className="inline mr-2" /> Aktywne
         </button>
         <button
-          onClick={() => setActiveTab('FINISHED')}
-          className={`px-4 py-2 ${activeTab === 'FINISHED' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'} rounded-r`}
+          onClick={() => setActiveTab('INACTIVE')}
+          className={`px-4 py-2 ${activeTab === 'INACTIVE' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'} rounded-r`}
         >
           <FaTimesCircle className="inline mr-2" /> Zakończone
         </button>
@@ -110,7 +110,7 @@ const MyAdsPage = () => {
           Szukam pomocy
         </button>
       </div>
-      <div>{activeTab === 'ACTIVE' ? renderAds(ads.ACTIVE) : renderAds(ads.FINISHED)}</div>
+      <div>{activeTab === 'ACTIVE' ? renderAds(ads.ACTIVE) : renderAds(ads.INACTIVE)}</div>
 
       <div className="mt-6 flex justify-center">
         {Array.from({ length: Math.ceil((filter === 'ALL' ? ads[activeTab].length : ads[activeTab].filter(ad => ad.helpType === filter).length) / itemsPerPage) }, (_, index) => (

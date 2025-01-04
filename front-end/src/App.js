@@ -28,6 +28,7 @@ import MyApplicationsPage from './Components/Home/MyApplicationsPage';
 import  MyAdsPage from './Components/Home/MyAdsPage';
 import MyAdDetailsProvide from './Components/Home/MyAdDetailsProvide';
 import ChatComponent from './Components/Home/ChatComponent';
+import MyHistoryPage from './Components/Home/MyHistoryPage';
 
 
 
@@ -183,11 +184,22 @@ function App() {
               <div className="flex flex-col min-h-screen">
                   <Navbar />
                   <main className="flex-grow bg-gray-100">
-                    <ChatComponent/>
+                  <ChatComponent/>
                   </main>
                 
               </div>
         } />
+
+      <Route path="/history" element={
+              <div className="flex flex-col min-h-screen">
+                  <Navbar />
+                  <main className="flex-grow bg-gray-100">
+                  <MyHistoryPage/>
+                  </main>
+                  <Footer />
+              </div>
+        } />
+          
           
 
 
