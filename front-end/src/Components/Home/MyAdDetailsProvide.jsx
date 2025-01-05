@@ -87,18 +87,41 @@ const MyAdDetailsProvide = () => {
     fetchApplicants()
   }, [adId])
 
+  // const fetchReviews = async (userId) => {
+  //   try {
+  //     const response = await fetch(`http://localhost:8080/getReviews?userId=${userId}`)
+  //     if (!response.ok) {
+  //       throw new Error('Network response was not ok')
+  //     }
+  //     const data = await response.json()
+  //     setReviews(data)
+  //   } catch (error) {
+  //     console.error('Error fetching reviews:', error)
+  //   }
+  // }
+
   const fetchReviews = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:8080/getReviews?userId=${userId}`)
+      setReviews([]); // Wyczyść poprzednie opinie
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:8080/api/review/getReviewsByUserId?userId=${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
       if (!response.ok) {
-        throw new Error('Network response was not ok')
+        throw new Error('Network response was not ok');
       }
-      const data = await response.json()
-      setReviews(data)
+      const data = await response.json();
+      setReviews(data);
+      setIsReviewsModalOpen(true);
     } catch (error) {
-      console.error('Error fetching reviews:', error)
+      console.error('Error fetching reviews:', error);
+      toast.error('Failed to fetch reviews.');
     }
-  }
+  };
 
   const fetchProfileData = async (userId) => {
     const token = localStorage.getItem("token")
@@ -135,11 +158,16 @@ const MyAdDetailsProvide = () => {
         throw new Error('Network response was not ok')
       }
       const updatedApplicant = await response.json()
+      setApplicants((prevApplicants) =>
+        prevApplicants.filter((applicant) => applicant.applicantId !== updatedApplicant.adApplicationId)
+      );
+
       console.log(updatedApplicant)
       setApplicants(applicants.map(applicant => 
         applicant.applicantId === updatedApplicant.adApplicationId ? updatedApplicant : applicant
       ));
       toast.success(`Status aplikacji został zmieniony na ${status}`);
+      
     } catch (error) {
       console.error('Error updating application status:', error);
       toast.error('Wystąpił błąd podczas zmiany statusu aplikacji');
@@ -351,11 +379,11 @@ const closeAd = async () => {
         </button>
 
         <button 
-                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
-                    onClick={closeAd}
-                >
-                    <FaCheck className="inline mr-1" /> Zakończ ogłoszenie
-                </button>
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+            onClick={closeAd}
+         >
+            <FaCheck className="inline mr-1" /> Zakończ ogłoszenie
+        </button>
       </div>
 
       <hr className="my-6 border-t-2 border-gray-300" />
@@ -396,7 +424,12 @@ const closeAd = async () => {
               <div className="mt-2 space-x-2">
                 <button 
                   className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
-                  onClick={() => openModal(applicant)}
+                  onClick={() => {
+                  openModal(applicant)
+                  // setSelectedApplicant(applicant.applicantId)
+                  // console.log(applicant.applicantId)
+                  // console.log(selectedApplicant)
+                  }}
                 >
                   <FaUser className="inline mr-1" /> Zobacz profil
                 </button>
@@ -506,7 +539,9 @@ const closeAd = async () => {
             <hr className="my-4 border-t-2 border-gray-300" />
 
             <button 
-              onClick={() => openReviewsModal(selectedApplicant.userId)} 
+              onClick={() => {openReviewsModal(selectedApplicant.applicantId)
+                console.log(selectedApplicant.applicantId)
+              }} 
               className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300"
             >
               Show Reviews
@@ -516,8 +551,39 @@ const closeAd = async () => {
         </div>
       )}
 
+{isReviewsModalOpen && (
+  <div className="fixed mt-16 inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full max-h-screen overflow-y-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">User Reviews</h2>
+        <button onClick={closeReviewsModal} className="text-gray-500 hover:text-gray-700">
+          <FaTimes />
+        </button>
+      </div>
+      {reviews.length > 0 ? (
+        <ul className="list-none p-0">
+          {reviews.map((review) => (
+            <li key={review.id} className="border border-gray-300 p-4 mb-4 rounded-lg">
+              <div className="flex items-center mb-2">
+                {[...Array(5)].map((_, i) => (
+                  <FaStar key={i} className={`mr-1 ${i < review.rating ? 'text-yellow-500' : 'text-gray-300'}`} />
+                ))}
+              </div>
+              <p className="font-bold">{review.userName}</p>
+              <p className="text-gray-700 mb-2">{review.comment}</p>
+              <p className="text-gray-500 text-sm">{new Date(review.createdAt).toLocaleDateString()}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-500">No reviews available for this user.</p>
+      )}
+    </div>
+  </div>
+)}
 
-      {isReviewsModalOpen && (
+
+      {/* {isReviewsModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
@@ -542,7 +608,7 @@ const closeAd = async () => {
             </ul>
           </div>
         </div>
-      )}
+      )} */}
 
 {isEditModalOpen && (
         <div className="mt-16 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

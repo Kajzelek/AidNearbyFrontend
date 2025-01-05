@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CreateAdForm = () => {
   const { register, handleSubmit, reset, setValue, watch } = useForm();
   const [useMap, setUseMap] = useState(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [selectedCoordinates, setSelectedCoordinates] = useState({ lat: null, lng: null });
+  const navigate = useNavigate();
   // const [base64Image, setBase64Image] = useState('');
 
   const categories = [
@@ -65,11 +69,15 @@ const CreateAdForm = () => {
         },
       });
 
-      alert('Ad created successfully!');
+      toast.success('Ad created successfully!');
       reset();
+
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
     } catch (error) {
       console.error('Error creating ad:', error);
-      alert('Failed to create ad.');
+      toast.error('Failed to create ad.');
     }
   };
 
@@ -132,6 +140,7 @@ const CreateAdForm = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 pt-16">
+      <ToastContainer />
       <div className="w-full max-w-lg p-8 bg-white rounded-2xl shadow-lg">
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Create Advertisement

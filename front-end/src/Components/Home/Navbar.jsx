@@ -148,7 +148,15 @@ const Navbar = () => {
                 {notifications.length > 0 ? (
                   <ul className="text-gray-700 text-sm">
                     {notifications.map(notification => (
-                      <li key={notification.notificationId} className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                      <li 
+                        key={notification.notificationId}
+                        className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          setTimeout(() => {
+                            navigate(`/ads/${notification.adId}`);
+                          }, 0);
+                        }}
+                        >
                         <div>
                           <p>
                           {notification.notificationType === 'NEW_AD' ? 'Nowe ogłoszenie w okolicy!' :
@@ -158,7 +166,12 @@ const Navbar = () => {
                           </p>
                           <p className="text-xs text-gray-500">{new Date(notification.createdAt).toLocaleString()}</p>
                         </div>
-                        <button onClick={() => handleDeleteNotification(notification.notificationId)} className="text-red-500 hover:text-red-700">
+                        <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteNotification(notification.notificationId)
+                        }} 
+                        className="text-red-500 hover:text-red-700">
                           <AiOutlineClose size={16} />
                         </button>
                       </li>
@@ -187,9 +200,6 @@ const Navbar = () => {
       <ul className="flex flex-col text-gray-700 text-sm">
         <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
           <Link to="/profile">My Profile</Link>
-        </li>
-        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-          <Link to="/settings">Settings</Link>
         </li>
         <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
           <button
