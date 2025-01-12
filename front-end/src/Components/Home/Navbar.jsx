@@ -198,9 +198,7 @@ const Navbar = () => {
   {showProfileMenu && (
     <div className="absolute top-full mt-2 w-48 bg-white rounded-lg shadow-lg border z-10 transform -translate-x-1/2 left-1/2 sm:left-auto sm:right-0 sm:translate-x-0">
       <ul className="flex flex-col text-gray-700 text-sm">
-        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-          <Link to="/profile">My Profile</Link>
-        </li>
+        
         <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
           <button
             // onClick={() => {
@@ -291,11 +289,7 @@ const Navbar = () => {
               Home
             </Link>
           </li>
-          <li>
-            <Link to="/profile" onClick={handleNav} className="hover:text-blue-600 transition">
-              My Profile
-            </Link>
-          </li>
+          
           <li>
             <Link to="/ads" onClick={handleNav} className="hover:text-blue-600 transition">
               Ads
@@ -315,10 +309,7 @@ const Navbar = () => {
         </ul>
 
         <div className="border-t border-gray-200 px-6 py-4 flex flex-col space-y-2">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-            Account
-          </button>
-          <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300" >
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700" >
             Logout
           </button>
         </div>

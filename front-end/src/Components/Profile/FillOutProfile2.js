@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import { FaMapMarkerAlt } from 'react-icons/fa';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const FillOutProfile = () => {
   const { auth, setAuth } = useAuth();
@@ -53,15 +55,17 @@ const FillOutProfile = () => {
       });
 
       if (response.ok) {
-        alert('Profile saved successfully!');
+        toast.success('Profile saved successfully!');
         setAuth((prev) => ({ ...prev, isNewUser: false }));
-        navigate('/hp3', { replace: true });
+        navigate('/', { replace: true });
       } else {
         const errorData = await response.json();
         setErrMsg(errorData.message || 'Failed to save profile');
+        toast.error(`Error: ${errorData.message}`);
       }
     } catch (error) {
       setErrMsg('An error occurred while saving the profile.');
+      toast.error('Error saving profile');
       console.error('Error:', error);
     }
   };
@@ -96,6 +100,7 @@ const FillOutProfile = () => {
   return (
     <section className="bg-gray-50 min-h-screen flex items-center justify-center">
       <div className="bg-white shadow-lg rounded-xl w-full max-w-3xl p-8">
+      <ToastContainer />
         <h1 className="text-2xl font-bold text-gray-700 mb-6">Fill Out Profile</h1>
         {errMsg && <p className="text-red-500 text-sm mb-4">{errMsg}</p>}
         <form onSubmit={handleSubmit} className="grid gap-4">
@@ -162,7 +167,7 @@ const FillOutProfile = () => {
               )}
             </div>
           </div>
-          <div>
+          {/* <div>
             <label htmlFor="profilePicture" className="block text-gray-600 mb-1">Profile Picture URL</label>
             <input
               type="text"
@@ -172,7 +177,7 @@ const FillOutProfile = () => {
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg"
             />
-          </div>
+          </div> */}
           <div>
             <label htmlFor="bio" className="block text-gray-600 mb-1">Bio</label>
             <textarea

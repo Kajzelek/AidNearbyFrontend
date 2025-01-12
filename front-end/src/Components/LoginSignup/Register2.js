@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from 'react';
 import axios from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
+import DesignerLogo from '../Assets/Designer.png';
+
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -79,7 +81,7 @@ const Register = () => {
             setPwd('');
             setMatchPwd('');
 
-            navigate('/login2', { replace: true });
+            navigate('/login', { replace: true });
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');
@@ -181,12 +183,16 @@ const Register = () => {
                         </button>
                     </form>
                 </div>
-                <div className="md:block hidden w-1/2">
+                {/* <div className="md:block hidden w-1/2">
                     <img
                         className="rounded-2xl"
                         src="https://images.unsplash.com/photo-1616606103915-dea7be788566?ixlib=rb-1.2.1&auto=format&fit=crop&w=1887&q=80"
                         alt="Decoration"
                     />
+                </div> */}
+
+                <div className="md:block hidden w-1/2">
+                    <img className="rounded-2xl" src={DesignerLogo} alt="Designer Logo" />
                 </div>
             </div>
         </section>
